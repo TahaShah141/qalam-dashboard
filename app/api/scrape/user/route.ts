@@ -1,5 +1,4 @@
-import { NextRequest, NextResponse } from "next/server"
-
+import { NextResponse } from "next/server"
 import { getUserData } from "@/lib/user"
 import { initNode } from "@/lib/initNode"
 

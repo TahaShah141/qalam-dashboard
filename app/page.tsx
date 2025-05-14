@@ -8,7 +8,6 @@ import { CourseCard } from "@/components/custom/CourseCard";
 import { Skeleton } from "@/components/ui/skeleton";
 import { UserCard } from "@/components/custom/UserCard";
 import { formatDate } from "date-fns"
-import { relative } from "path";
 
 export default function Home() {
 
