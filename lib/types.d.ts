@@ -11,3 +11,8 @@ export type UserType = {
   pfp: string;
   department: string;
 };
+
+export type CredentialsType = {
+  login: string
+  password: string
+}

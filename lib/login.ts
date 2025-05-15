@@ -1,6 +1,7 @@
+import { CredentialsType } from "./types";
 import fetch from "node-fetch";
 
-export const login = async (): Promise<string> => {
+export const login = async (credentials: CredentialsType): Promise<string> => {
   const loginUrl = process.env.QALAM_URL! + "/web/login";
 
   // Step 1: Get login page to extract CSRF and initial cookies
@@ -25,8 +26,8 @@ export const login = async (): Promise<string> => {
   // Step 2: POST login with form data and cookies
   const formData = new URLSearchParams();
   formData.append("csrf_token", csrfToken);
-  formData.append("login", process.env.QALAM_ID!);
-  formData.append("password", process.env.QALAM_PASSWORD!);
+  formData.append("login", credentials.login);
+  formData.append("password", credentials.password);
 
   const loginResponse = await fetch(loginUrl, {
     method: "POST",

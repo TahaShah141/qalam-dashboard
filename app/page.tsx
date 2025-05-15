@@ -2,54 +2,84 @@
 
 import { AttendanceType, UserType } from "@/lib/types";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
+import { fetchAttendanceData, scrapeAttendanceData } from "@/lib/fetches/attendanceData";
 import { useEffect, useState } from "react";
 
 import { CourseCard } from "@/components/custom/CourseCard";
 import { Skeleton } from "@/components/ui/skeleton";
 import { UserCard } from "@/components/custom/UserCard";
+import { fetchCookies } from "@/lib/fetches/cookies";
+import { fetchUserData } from "@/lib/fetches/userData";
 import { formatDate } from "date-fns"
+import { getLocalCredentials } from "@/lib/utils";
 
 export default function Home() {
 
   const [courses, setCourses] = useState<AttendanceType[]>([])
   const [lastUpdated, setLastUpdated] = useState("")
   const [loadingCourses, setLoadingCourses] = useState(false)
-  
-  useEffect(() => {
-    const fetchCourses = async () => {
-      setLoadingCourses(true)
-      const { node } = await (await fetch("/api/database/attendances")).json()
-      console.log({node})
 
-      if (!node) {
-        reloadContent()
-        return
+  useEffect(() => {
+    // local data
+    const cookies = localStorage.getItem("cookies")
+    console.log({cookies})
+    const { credentials } = getLocalCredentials()
+    
+    // Fetch Cookies
+    const updateCookies = async () => {
+      const { verified, cookies } = await fetchCookies(credentials)
+      if (!verified) {
+        localStorage.removeItem("login")
+        localStorage.removeItem("password")
+      } else {
+        localStorage.setItem("cookies", cookies)
       }
+    }
+    
+    // Fetch Courses
+    const fetchCourses = async () => {
+      const cookies = localStorage.getItem("cookies")
+      setLoadingCourses(true)
+      const { courses, lastUpdated } = await fetchAttendanceData(credentials, cookies!)
       
-      setCourses(JSON.parse(node.value))
-      setLastUpdated(formatDate(node.updatedAt, "HH:mm, do MMM"))
+      setCourses(courses)
+      setLastUpdated(formatDate(lastUpdated, "HH:mm, do MMM"))
       setLoadingCourses(false)
     }
-    fetchCourses()
+    
+    // Fetch User
+    const fetchUser = async () => {
+      const cookies = localStorage.getItem("cookies")
+      setLoadingUser(true)
+      const localUser = localStorage.getItem("user")
+      if (localUser) {
+        setUser(JSON.parse(localUser))
+        setLoadingUser(false)
+        return;
+      }
+      const { user } = await fetchUserData(credentials, cookies!)
+      setUser(user)
+      localStorage.setItem("user", JSON.stringify(user))
+      setLoadingUser(false)
+    }
+
+    const useEffectFunctions = async () => {
+      if (!cookies) await updateCookies()
+      fetchCourses()
+      fetchUser()
+    }
+    useEffectFunctions()
   }, [])
+
   
   const [user, setUser] = useState<UserType>()
   const [loadingUser, setLoadingUser] = useState(false)
   
-  useEffect(() => {
-    const fetchUser = async () => {
-      setLoadingUser(true)
-      const { node } = await (await fetch("/api/database/qalam-user")).json()
-      console.log({node})
-      setUser(JSON.parse(node.value))
-      setLoadingUser(false)
-    }
-    fetchUser()
-  }, [])
-  
   const reloadContent = async () => {
     setLoadingCourses(true)
-    const { attendances } = await (await fetch("/api/scrape")).json()
+    const { credentials } = getLocalCredentials()
+    const cookies = localStorage.getItem("cookies")
+    const attendances = await scrapeAttendanceData(credentials, cookies!)
     console.log({attendances})
     setCourses(attendances)
     setLastUpdated(formatDate(Date.now(), "HH:mm, do MMM"))
@@ -92,7 +122,6 @@ export default function Home() {
         ))
         :
         courses.map((c, i) => <CourseCard key={i} {...c} />)}
-        
       </div>
     </div>
   );

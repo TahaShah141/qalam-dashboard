@@ -1,16 +1,16 @@
 import * as cheerio from "cheerio";
 
-import { AttendanceType } from "./types";
+import { AttendanceType, CredentialsType } from "./types";
+
 import { login } from "./login";
 
-export const getAttendanceFromQalam = async (): Promise<AttendanceType[]> => {
-  const cookies = await login();
+export const getAttendanceFromQalam = async (credentials: CredentialsType, cookies?: string): Promise<AttendanceType[]> => {
 
   const url = process.env.QALAM_URL + "/student/dashboard";
   const response = await fetch(url, {
     headers: {
       "User-Agent": "Mozilla/5.0",
-      "Cookie": cookies,
+      "Cookie": cookies ? cookies : await login(credentials),
     },
   });
 
