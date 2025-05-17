@@ -1,6 +1,6 @@
 import { clsx, type ClassValue } from "clsx"
 import { twMerge } from "tailwind-merge"
-import { CredentialsType } from "./types"
+import { CourseInfoType, CredentialsType } from "./types"
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
@@ -12,4 +12,10 @@ export const getLocalCredentials = (): {credentials: CredentialsType} => {
     password: localStorage.getItem("password")!
   }
   return { credentials }
+}
+
+export const getLocalCourseInfo = (id: string): {course: CourseInfoType} => {
+  const courses = JSON.parse(localStorage.getItem("courses")!) as CourseInfoType[]
+  const course = courses.find(c => c.id === id)!
+  return { course }
 }

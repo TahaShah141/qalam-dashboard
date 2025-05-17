@@ -1,11 +1,11 @@
 import * as cheerio from "cheerio";
 
-import { AttendanceListType, CredentialsType } from "../types";
+import { AttendanceListType, CourseAttendanceType, CredentialsType } from "../types";
 import { loadFromFile, saveToFile } from "../files";
 
 import { login } from "./login";
 
-export const getCourseAttendanceFromQalam = async (id: string, credentials: CredentialsType, cookies?: string): Promise<Record<string, AttendanceListType>> => {
+export const getCourseAttendanceFromQalam = async (id: string, credentials: CredentialsType, cookies?: string): Promise<CourseAttendanceType> => {
 
   const url = process.env.QALAM_URL + "/student/course/attendance/" + id;
   const response = await fetch(url, {

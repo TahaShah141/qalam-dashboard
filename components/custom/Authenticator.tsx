@@ -10,6 +10,7 @@ type AuthenticatorProps = {
 
 export const Authenticator = ({children}: AuthenticatorProps) => {
   const [authenticated, setAuthenticated] = useState(false)
+  const [checking, setChecking] = useState(true)
 
   useEffect(() => {
     const login = localStorage.getItem("login")
@@ -18,9 +19,10 @@ export const Authenticator = ({children}: AuthenticatorProps) => {
     if (login && password) {
       setAuthenticated(true)
     }
+    setChecking(false)
   }, [])
 
-  if (!authenticated) {
+  if (!authenticated && !checking) {
     return <LoginForm setAuthenticated={setAuthenticated}/>
   }
 

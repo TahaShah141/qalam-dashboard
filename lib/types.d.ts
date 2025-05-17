@@ -1,16 +1,20 @@
-export type AttendanceType = {
-  courseName: string;
-  courseCode: string;
-  courseLink: string;
+export type CourseInfoType = {
+  name: string;
+  code: string;
+  id: string;
+  instructor: string
+  creditHours: number
   attendance: number;
 };
 
-export type CourseAttendanceType = {
+export type AttendanceType = {
   date: string,
   isPresent: boolean
 }
 
-export type AttendanceListType = CourseAttendanceType[]
+export type AttendanceListType = AttendanceType[]
+
+export type CourseAttendanceType = Record<string, AttendanceListType>
 
 export type UserType = {
   name: string;

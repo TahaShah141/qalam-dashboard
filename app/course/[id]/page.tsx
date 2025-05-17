@@ -2,80 +2,18 @@
 
 import { Button, buttonVariants } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuRadioGroup, DropdownMenuRadioItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
+import { CourseAttendanceType, CourseInfoType } from "@/lib/types"
+import { DropdownMenu, DropdownMenuContent, DropdownMenuRadioGroup, DropdownMenuRadioItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
+import { fetchCourseAttendance, scrapeCourseAttendanceData } from "@/lib/fetches/courseAttendance"
+import { getLocalCourseInfo, getLocalCredentials } from "@/lib/utils"
+import { useEffect, useState } from "react"
 
 import { AttendanceBar } from "@/components/custom/AttendanceBar"
-import { AttendanceListType } from "@/lib/types"
 import { AttendanceMap } from "@/components/custom/AttendanceMap"
 import { Label } from "@/components/ui/label"
 import { Skeleton } from "@/components/ui/skeleton"
-import { useState } from "react"
-
-const lectureAttendances: AttendanceListType = [
-  { date: "2025-01-29", isPresent: true },
-  { date: "2025-01-29", isPresent: true },
-  { date: "2025-01-30", isPresent: true },
-  { date: "2025-02-06", isPresent: true },
-  { date: "2025-02-12", isPresent: true },
-  { date: "2025-02-12", isPresent: true },
-  { date: "2025-02-13", isPresent: true },
-  { date: "2025-02-19", isPresent: true },
-  { date: "2025-02-19", isPresent: true },
-  { date: "2025-02-20", isPresent: true },
-  { date: "2025-02-26", isPresent: true },
-  { date: "2025-02-26", isPresent: true },
-  { date: "2025-02-27", isPresent: true },
-  { date: "2025-03-05", isPresent: false },
-  { date: "2025-03-05", isPresent: false },
-  { date: "2025-03-06", isPresent: true },
-  { date: "2025-03-12", isPresent: true },
-  { date: "2025-03-12", isPresent: true },
-  { date: "2025-03-13", isPresent: true },
-  { date: "2025-03-19", isPresent: true },
-  { date: "2025-03-19", isPresent: true },
-  { date: "2025-03-26", isPresent: true },
-  { date: "2025-03-26", isPresent: true },
-  { date: "2025-04-09", isPresent: true },
-  { date: "2025-04-09", isPresent: true },
-  { date: "2025-04-10", isPresent: true },
-  { date: "2025-04-16", isPresent: true },
-  { date: "2025-04-16", isPresent: false },
-  { date: "2025-04-17", isPresent: true },
-  { date: "2025-04-19", isPresent: false },
-  { date: "2025-04-23", isPresent: true },
-  { date: "2025-04-23", isPresent: true },
-  { date: "2025-04-24", isPresent: true },
-  { date: "2025-04-30", isPresent: false },
-  { date: "2025-04-30", isPresent: true },
-  { date: "2025-05-07", isPresent: true },
-  { date: "2025-05-07", isPresent: false },
-  { date: "2025-05-09", isPresent: true },
-  { date: "2025-05-09", isPresent: true },
-  { date: "2025-05-14", isPresent: false },
-  { date: "2025-05-14", isPresent: false },
-  { date: "2025-05-15", isPresent: true }
-]
-
-const labAttendances: AttendanceListType = [
-  { date: "2025-01-31", isPresent: true },
-  { date: "2025-02-07", isPresent: true },
-  { date: "2025-02-14", isPresent: true },
-  { date: "2025-02-21", isPresent: true },
-  { date: "2025-02-28", isPresent: true },
-  { date: "2025-03-07", isPresent: true },
-  { date: "2025-03-14", isPresent: true },
-  { date: "2025-04-11", isPresent: true },
-  { date: "2025-04-18", isPresent: true },
-  { date: "2025-04-25", isPresent: false },
-  { date: "2025-04-26", isPresent: false },
-  { date: "2025-05-09", isPresent: true },
-  { date: "2025-05-16", isPresent: true }
-]
-
-const courseData = {
-  name: "Parallel & Distributed Computing (CS-432)",
-  instructor: "Dr. Khurram Shehzad"
-}
+import { updateCookies } from "@/lib/fetches/cookies"
+import { useParams } from "next/navigation";
 
 type CourseClassType = "Lecture" | "Lab"
 
@@ -85,17 +23,48 @@ const LOGOS = {
 }
 
 export default function CoursePage() {
-  
-  const { name, instructor } = courseData
-
+  const { id } = useParams<{ id: string }>();
   const [selectedData, setSelectedData] = useState<CourseClassType>("Lecture")
 
-  const attendancesMap: Record<CourseClassType, AttendanceListType>= {
-    Lab: labAttendances,
-    Lecture: lectureAttendances
+  const [course, setCourse] = useState<CourseInfoType | undefined>()
+  const [attendancesMap, setAttendancesMap] = useState<CourseAttendanceType>({})
+  const [loadingAttendance, setLoadingAttendance] = useState(false)
+
+  useEffect(() => {
+    // local data
+    const cookies = localStorage.getItem("cookies")
+    console.log({cookies})
+    const { credentials } = getLocalCredentials()
+
+    const { course: localCourse} = getLocalCourseInfo(id)
+    setCourse(localCourse)
+
+    // fetch Attendance
+    const fetchAttendances = async () => {
+      const cookies = localStorage.getItem("cookies")
+      setLoadingAttendance(true)
+      const { attendances } = await fetchCourseAttendance(id, credentials, cookies!)
+      setAttendancesMap(attendances)
+      setLoadingAttendance(false)
+    }
+
+    const useEffectFunctions = async () => {
+      if (!cookies) await updateCookies(credentials);
+      fetchAttendances()
+    }
+    useEffectFunctions()
+  }, [id])
+
+  const reloadContent = async () => {
+    setLoadingAttendance(true)
+    const { credentials } = getLocalCredentials()
+    const cookies = localStorage.getItem("cookies")
+    const attendances = await scrapeCourseAttendanceData(id, credentials, cookies!)
+    setAttendancesMap(attendances)
+    setLoadingAttendance(false)
   }
 
-  const attendances = attendancesMap[selectedData]
+  const attendances = attendancesMap[selectedData] || []
   const total = attendances.length
   const attended = attendances.filter(a => a.isPresent).length
   const missed = total - attended
@@ -104,67 +73,70 @@ export default function CoursePage() {
   return (
     <div className="flex flex-col gap-6 p-6">
       <Card>
-        <CardContent className="flex flex-wrap gap-4 justify-between items-center">
-          <div className="flex flex-col gap-4 justify-center">
+        <CardContent className="flex flex-wrap gap-2 sm:gap-4 justify-between items-center">
+          <div className="flex flex-col gap-2 sm:gap-4 justify-center">
+            {course ? 
             <div className="flex flex-col">
-              <CardTitle className="text-3xl">{name}</CardTitle>
-              <CardDescription className="text-xl">{instructor}</CardDescription>
-            </div>
-            <div className="flex flex-wrap items-center gap-4 w-fit">
-              <DropdownMenu>
-                <DropdownMenuTrigger className={`${buttonVariants({variant: "secondary", size: "lg"})} font-bold capitalize w-24`}>
-                  {LOGOS[selectedData]}
-                  {selectedData}
-                </DropdownMenuTrigger>
-                <DropdownMenuContent>
-                  <DropdownMenuRadioGroup value={selectedData} onValueChange={(v) => setSelectedData(v as CourseClassType)}>
-                    <DropdownMenuRadioItem value="Lecture">
-                      {LOGOS.Lecture}
-                      Lecture
-                    </DropdownMenuRadioItem>
-                    <DropdownMenuRadioItem value="Lab">
-                      {LOGOS.Lab}
-                      Lab
-                    </DropdownMenuRadioItem>
-                  </DropdownMenuRadioGroup>
-                </DropdownMenuContent>
-              </DropdownMenu>
-              <div className="flex gap-2 p-2 rounded-md bg-secondary">
-                <p className="font-bold text-green-500">Attended:</p>
-                <p className="font-light">{attended}</p>
+              <CardTitle className="sm:text-2xl md:text-3xl flex gap-2 items-baseline flex-wrap">
+                {course.name}
+                <CardDescription className="sm:text-lg md:text-xl">{course.code}</CardDescription>
+              </CardTitle>
+              <CardDescription className="sm:text-lg md:text-xl">{course.instructor}</CardDescription>
+            </div>:
+            <div className="flex flex-col gap-2">
+              <div className="flex gap-2 flex-wrap items-baseline">
+                <Skeleton className="h-8 w-52" />
+                <Skeleton className="h-8 w-16" />
               </div>
-              <div className="flex gap-2 p-2 rounded-md bg-secondary">
-                <p className="font-bold text-red-500">Missed:</p>
-                <p className="font-light">{missed}</p>
+              <Skeleton className="h-6 w-28" />
+            </div>
+            }
+            <div className="flex flex-wrap items-center gap-2 sm:gap-4 w-fit">
+              <div className="flex flex-wrap items-center gap-2 sm:gap-4 w-fit">
+                <Button onClick={reloadContent} variant={"secondary"} size={"smlg"}>
+                  <svg className="h-full" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path fill="currentColor" d="M12.077 19q-2.931 0-4.966-2.033q-2.034-2.034-2.034-4.964t2.034-4.966T12.077 5q1.783 0 3.339.847q1.555.847 2.507 2.365V5.5q0-.213.144-.356T18.424 5t.356.144t.143.356v3.923q0 .343-.232.576t-.576.232h-3.923q-.212 0-.356-.144t-.144-.357t.144-.356t.356-.143h3.2q-.78-1.496-2.197-2.364Q13.78 6 12.077 6q-2.5 0-4.25 1.75T6.077 12t1.75 4.25t4.25 1.75q1.787 0 3.271-.968q1.485-.969 2.202-2.573q.085-.196.274-.275q.19-.08.388-.013q.211.067.28.275t-.015.404q-.833 1.885-2.56 3.017T12.077 19"/></svg>
+                  <Label className="">Reload</Label>
+                </Button>
+                <DropdownMenu>
+                  <DropdownMenuTrigger className={`${buttonVariants({variant: "secondary", size: "smlg"})} font-bold text-xs capitalize w-24`}>
+                    {LOGOS[selectedData]}
+                    <Label>{selectedData}</Label>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent>
+                    <DropdownMenuRadioGroup value={selectedData} onValueChange={(v) => setSelectedData(v as CourseClassType)}>
+                      {Object.keys(attendancesMap).map((type) => (
+                        <DropdownMenuRadioItem key={type} value={type}>
+                          {LOGOS[type as CourseClassType]}
+                          {type}
+                        </DropdownMenuRadioItem>
+                      ))}
+                    </DropdownMenuRadioGroup>
+                  </DropdownMenuContent>
+                </DropdownMenu>
+              </div>
+              <div className="flex flex-wrap items-center gap-2 sm:gap-4 w-fit">
+                <div className="flex gap-2 p-2 rounded-md text-xs sm:text-base bg-secondary">
+                  <p className="font-bold text-green-500">Attended:</p>
+                  <p className="font-light">{attended}</p>
+                </div>
+                <div className="flex gap-2 p-2 rounded-md text-xs sm:text-base bg-secondary">
+                  <p className="font-bold text-red-500">Missed:</p>
+                  <p className="font-light">{missed}</p>
+                </div>
               </div>
             </div>
           </div>
-          <div className="flex flex-col gap-4">
-            <AttendanceMap attendances={attendances} totalClasses={selectedData === "Lecture" ? 3*16 : 16} horizontal={selectedData === "Lab"} heading={"Lecture Attendance"} />
-            <div className="flex gap-2 items-center">
+          <div className="flex w-full max-w-md flex-col gap-2 sm:gap-4">
+            {loadingAttendance ? 
+            <Skeleton className="h-32 w-full " /> :
+            <AttendanceMap attendances={attendances} totalClasses={selectedData === "Lecture" ? 3*16 : 16} horizontal={selectedData === "Lab"} heading={"Lecture Attendance"} />}
+            {!loadingAttendance && <div className="flex gap-2 items-center max-w-2xl">
               <AttendanceBar attendance={attendance} className="bg-muted-foreground" />
               <Label className="text-muted-foreground">{attendance}%</Label>
-            </div>
+            </div>}
           </div>
         </CardContent>
       </Card>
-      <div className="grid grid-cols-3 gap-4">
-        {Array.from({length: 5}, (_, i) => (
-          <Card key={i} className="w-full">
-            <CardHeader>
-              <Skeleton className="h-4 w-1/2 rounded-sm" />
-              <Skeleton className="h-4 w-1/6 rounded-sm" />
-            </CardHeader>
-            <CardContent className="flex flex-col gap-2">
-              <div className="flex justify-between">
-                <Skeleton className="w-1/5 h-4 rounded-sm" />
-                <Skeleton className="w-8 h-4 rounded-sm" />
-              </div>
-              <Skeleton className="h-2 w-full rounded-sm" />
-            </CardContent>
-          </Card>
-        ))}
-      </div>
     </div>
   )
 }

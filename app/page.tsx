@@ -1,21 +1,21 @@
 "use client"
 
-import { AttendanceType, UserType } from "@/lib/types";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
-import { fetchAttendanceData, scrapeAttendanceData } from "@/lib/fetches/attendanceData";
+import { CourseInfoType, UserType } from "@/lib/types";
+import { fetchCourseInfo, scrapeCourseData } from "@/lib/fetches/courseData";
 import { useEffect, useState } from "react";
 
 import { CourseCard } from "@/components/custom/CourseCard";
 import { Skeleton } from "@/components/ui/skeleton";
 import { UserCard } from "@/components/custom/UserCard";
-import { fetchCookies } from "@/lib/fetches/cookies";
 import { fetchUserData } from "@/lib/fetches/userData";
 import { formatDate } from "date-fns"
 import { getLocalCredentials } from "@/lib/utils";
+import { updateCookies } from "@/lib/fetches/cookies";
 
 export default function Home() {
 
-  const [courses, setCourses] = useState<AttendanceType[]>([])
+  const [courses, setCourses] = useState<CourseInfoType[]>([])
   const [lastUpdated, setLastUpdated] = useState("")
   const [loadingCourses, setLoadingCourses] = useState(false)
 
@@ -25,23 +25,13 @@ export default function Home() {
     console.log({cookies})
     const { credentials } = getLocalCredentials()
     
-    // Fetch Cookies
-    const updateCookies = async () => {
-      const { verified, cookies } = await fetchCookies(credentials)
-      if (!verified) {
-        localStorage.removeItem("login")
-        localStorage.removeItem("password")
-      } else {
-        localStorage.setItem("cookies", cookies)
-      }
-    }
-    
     // Fetch Courses
     const fetchCourses = async () => {
       const cookies = localStorage.getItem("cookies")
       setLoadingCourses(true)
-      const { courses, lastUpdated } = await fetchAttendanceData(credentials, cookies!)
+      const { courses, lastUpdated } = await fetchCourseInfo(credentials, cookies!)
       
+      localStorage.setItem("courses", JSON.stringify(courses))
       setCourses(courses)
       setLastUpdated(formatDate(lastUpdated, "HH:mm, do MMM"))
       setLoadingCourses(false)
@@ -64,7 +54,7 @@ export default function Home() {
     }
 
     const useEffectFunctions = async () => {
-      if (!cookies) await updateCookies()
+      if (!cookies) await updateCookies(credentials)
       fetchCourses()
       fetchUser()
     }
@@ -79,9 +69,9 @@ export default function Home() {
     setLoadingCourses(true)
     const { credentials } = getLocalCredentials()
     const cookies = localStorage.getItem("cookies")
-    const attendances = await scrapeAttendanceData(credentials, cookies!)
-    console.log({attendances})
-    setCourses(attendances)
+    const courses = await scrapeCourseData(credentials, cookies!)
+    console.log({courses})
+    setCourses(courses)
     setLastUpdated(formatDate(Date.now(), "HH:mm, do MMM"))
     setLoadingCourses(false)
   }
