@@ -41,7 +41,7 @@ export default function Home() {
     const fetchUser = async () => {
       const cookies = localStorage.getItem("cookies")
       setLoadingUser(true)
-      const localUser = localStorage.getItem("user")
+      const localUser = localStorage.getItem("qalam-user")
       if (localUser) {
         setUser(JSON.parse(localUser))
         setLoadingUser(false)
@@ -49,7 +49,7 @@ export default function Home() {
       }
       const { user } = await fetchUserData(credentials, cookies!)
       setUser(user)
-      localStorage.setItem("user", JSON.stringify(user))
+      localStorage.setItem("qalam-user", JSON.stringify(user))
       setLoadingUser(false)
     }
 
