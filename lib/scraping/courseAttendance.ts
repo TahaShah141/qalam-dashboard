@@ -47,8 +47,15 @@ export const getCourseAttendanceFromQalam = async (id: string, credentials: Cred
 
   const toReturn: Record<string, AttendanceListType> = {};
 
-  tableNames.forEach((name, idx) => {
-    toReturn[name] = tableData[idx] || [];
+  const attendanceArray: { name: string, data: AttendanceListType }[] = tableNames.map((name, idx) => ({
+    name,
+    data: tableData[idx] || []
+  }));
+
+  attendanceArray.sort((a, b) => b.data.length - a.data.length);
+
+  attendanceArray.forEach(({ name, data }) => {
+    toReturn[name] = data;
   });
 
   return toReturn;

@@ -17,10 +17,7 @@ export async function POST(request: NextRequest, context: { params: Promise<Para
 
   try {
     const attendances = await getCourseAttendanceFromQalam(id, credentials, cookies)
-    if (isVerified(credentials)) await initNode({key: `course-${id}-attendance`, value: JSON.stringify(attendances)});
-    
-    console.log({attendances})
-    
+    if (isVerified(credentials)) await initNode({key: `course-${id}-attendance`, value: JSON.stringify(attendances)});    
     return NextResponse.json({ attendances })
   } catch (error) {
     console.log(error)
