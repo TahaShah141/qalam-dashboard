@@ -128,7 +128,7 @@ export default function CoursePage() {
           </div>
           <div className="flex w-full max-w-md flex-col gap-2 sm:gap-4">
             {loadingAttendance ? 
-            <Skeleton className="h-32 w-full " /> :
+            <Skeleton className="h-24 sm:h-32 w-full " /> :
             <AttendanceMap attendances={attendances} totalClasses={selectedData === "Lecture" ? 3*16 : 16} horizontal={selectedData === "Lab"} />}
             {!loadingAttendance && <div className="flex gap-2 items-center max-w-2xl">
               <AttendanceBar attendance={attendance} className="bg-muted-foreground" />
