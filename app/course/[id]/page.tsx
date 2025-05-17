@@ -69,6 +69,9 @@ export default function CoursePage() {
   const attended = attendances.filter(a => a.isPresent).length
   const missed = total - attended
   const attendance = Math.round((attended / total)*100)
+  const containsLab = attendancesMap.Lab !== undefined
+
+  console.log({attendances})
 
   return (
     <div className="flex flex-col gap-6 p-6">
@@ -129,7 +132,7 @@ export default function CoursePage() {
           <div className="flex w-full max-w-md flex-col gap-2 sm:gap-4">
             {loadingAttendance ? 
             <Skeleton className="h-24 sm:h-32 w-full " /> :
-            <AttendanceMap attendances={attendances} totalClasses={selectedData === "Lecture" ? 3*16 : 16} horizontal={selectedData === "Lab"} />}
+            <AttendanceMap attendances={attendances} rows={selectedData === "Lecture" ? ((course?.creditHours || 3) - (containsLab ? 1 : 0)) : 1} horizontal={selectedData === "Lab"} />}
             {!loadingAttendance && <div className="flex gap-2 items-center max-w-2xl">
               <AttendanceBar attendance={attendance} className="bg-muted-foreground" />
               <Label className="text-muted-foreground">{attendance}%</Label>

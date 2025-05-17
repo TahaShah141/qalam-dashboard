@@ -6,11 +6,13 @@ import { formatDate } from "date-fns"
 
 type AttendanceMapProps = {
   horizontal: boolean
-  totalClasses: number
+  rows: number
   attendances: AttendanceListType
 }
 
-export const AttendanceMap = ({attendances, horizontal, totalClasses}: AttendanceMapProps) => {
+export const AttendanceMap = ({attendances, horizontal, rows}: AttendanceMapProps) => {
+
+  const totalClasses = rows * 16
 
   const getAttendanceColor = (i: number): string => {
     if (i >= attendances.length) return "from-neutral-700 to-black border-neutral-800"
@@ -34,7 +36,7 @@ export const AttendanceMap = ({attendances, horizontal, totalClasses}: Attendanc
   }, [visibleCount, totalClasses]);
   
   return (
-    <div className={`grid ${horizontal ? "" : "grid-rows-3 grid-flow-col"} w-fit gap-1 sm:gap-1.5`} style={{ gridTemplateColumns: `repeat(16, minmax(0, 1fr))` }}>
+    <div className={`grid ${horizontal ? "" : "grid-rows-3 grid-flow-col"} w-fit gap-1 sm:gap-1.5`} style={{ gridTemplateColumns: `repeat(16, minmax(0, 1fr))`, gridTemplateRows: `repeat(${rows}, minmax(0, 1fr))` }}>
       {Array.from({length: totalClasses}, (_, i) => (
         <HoverCard key={i} openDelay={1000} open={dateOpen === i} onOpenChange={() => {}}>
           <HoverCardTrigger onMouseEnter={() => setDateOpen(d => d ? i : i)} onMouseLeave={() => setTimeout(() => setDateOpen(d => d === i ? -1 : d), 250)} onClick={() => setDateOpen(d => d === i ? -1 : i)} className="underline">
