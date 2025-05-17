@@ -6,8 +6,12 @@ import { Label } from "../ui/label"
 import Link from "next/link"
 
 export const CourseCard = ({courseName, courseCode, courseLink, attendance}: AttendanceType) => {
+
+  const pathParts = courseLink.split("/") 
+  const courseID = pathParts[pathParts.length - 1]
+
   return (
-    <Link href={`${process.env.NEXT_PUBLIC_QALAM_URL}${courseLink}`}>
+    <Link href={`/course/${courseID}`}>
       <Card>
         <CardHeader>
           <CardTitle>{courseName}</CardTitle>

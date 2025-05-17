@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server"
 
-import { getUserData } from "@/lib/user"
+import { getUserData } from "@/lib/scraping/user"
 import { initNode } from "@/lib/initNode"
 import { isVerified } from "@/lib/isVerified"
 

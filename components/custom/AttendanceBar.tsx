@@ -17,6 +17,6 @@ export const AttendanceBar = ({attendance, className=""}: AttendanceBarProps) =>
   }, [attendance])
 
   return (
-    <Progress value={progress} className={className} />
+    <Progress value={progress} progressClassName={className} />
   )
 }

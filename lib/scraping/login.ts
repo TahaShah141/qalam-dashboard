@@ -1,4 +1,4 @@
-import { CredentialsType } from "./types";
+import { CredentialsType } from "../types";
 import fetch from "node-fetch";
 
 export const login = async (credentials: CredentialsType): Promise<string> => {

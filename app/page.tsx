@@ -87,7 +87,7 @@ export default function Home() {
   }
   
   return (
-    <div className="flex flex-col gap-6 p-4">
+    <div className="flex flex-col gap-6 p-6">
       {user && <UserCard onReload={reloadContent} lastUpdated={lastUpdated} {...user} />}
       {loadingUser && (
         <Card className="w-full">

@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server"
 
-import { getAttendanceFromQalam } from "@/lib/attendance"
+import { getAttendanceFromQalam } from "@/lib/scraping/attendance"
 import { initNode } from "@/lib/initNode"
 import { isVerified } from "@/lib/isVerified"
 

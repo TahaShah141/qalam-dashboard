@@ -5,6 +5,13 @@ export type AttendanceType = {
   attendance: number;
 };
 
+export type CourseAttendanceType = {
+  date: string,
+  isPresent: boolean
+}
+
+export type AttendanceListType = CourseAttendanceType[]
+
 export type UserType = {
   name: string;
   cms: string;

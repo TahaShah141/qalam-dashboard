@@ -1,6 +1,6 @@
 import * as cheerio from "cheerio";
 
-import { CredentialsType, UserType } from "./types";
+import { CredentialsType, UserType } from "../types";
 
 import { login } from "./login";
 

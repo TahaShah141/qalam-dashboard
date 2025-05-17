@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server"
 
-import { login } from "@/lib/login"
+import { login } from "@/lib/scraping/login"
 
 export const dynamic = 'force-dynamic' // defaults to auto
 

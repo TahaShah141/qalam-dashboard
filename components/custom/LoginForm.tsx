@@ -84,7 +84,7 @@ export const LoginForm = ({setAuthenticated}: LoginFormProps) => {
   }
 
   return (
-    <div className="h-screen flex justify-center items-center">
+    <div className="h-screen flex justify-center items-center p-2">
       <Form {...form}>
         <Card className="w-full max-w-sm">
           <CardHeader>
