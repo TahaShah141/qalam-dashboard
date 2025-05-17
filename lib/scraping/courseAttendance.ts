@@ -1,7 +1,6 @@
 import * as cheerio from "cheerio";
 
 import { AttendanceListType, CourseAttendanceType, CredentialsType } from "../types";
-import { loadFromFile, saveToFile } from "../files";
 
 import { login } from "./login";
 

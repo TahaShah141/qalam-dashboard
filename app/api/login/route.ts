@@ -13,6 +13,6 @@ export async function POST(request: NextRequest) {
     console.log({cookies})
     return NextResponse.json({ verified: true, cookies })
   } catch (error) {
-    return NextResponse.json({ verified: false })
+    return NextResponse.json({ verified: false, error })
   }
 }

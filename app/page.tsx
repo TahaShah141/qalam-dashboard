@@ -53,12 +53,12 @@ export default function Home() {
       setLoadingUser(false)
     }
 
-    const useEffectFunctions = async () => {
+    const effectFunctions = async () => {
       if (!cookies) await updateCookies(credentials)
       fetchCourses()
       fetchUser()
     }
-    useEffectFunctions()
+    effectFunctions()
   }, [])
 
   

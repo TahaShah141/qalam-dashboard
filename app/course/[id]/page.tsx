@@ -1,7 +1,7 @@
 "use client"
 
 import { Button, buttonVariants } from "@/components/ui/button"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import { Card, CardContent, CardDescription, CardTitle } from "@/components/ui/card"
 import { CourseAttendanceType, CourseInfoType } from "@/lib/types"
 import { DropdownMenu, DropdownMenuContent, DropdownMenuRadioGroup, DropdownMenuRadioItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
 import { fetchCourseAttendance, scrapeCourseAttendanceData } from "@/lib/fetches/courseAttendance"
@@ -48,11 +48,11 @@ export default function CoursePage() {
       setLoadingAttendance(false)
     }
 
-    const useEffectFunctions = async () => {
+    const effectFunctions = async () => {
       if (!cookies) await updateCookies(credentials);
       fetchAttendances()
     }
-    useEffectFunctions()
+    effectFunctions()
   }, [id])
 
   const reloadContent = async () => {
@@ -129,7 +129,7 @@ export default function CoursePage() {
           <div className="flex w-full max-w-md flex-col gap-2 sm:gap-4">
             {loadingAttendance ? 
             <Skeleton className="h-32 w-full " /> :
-            <AttendanceMap attendances={attendances} totalClasses={selectedData === "Lecture" ? 3*16 : 16} horizontal={selectedData === "Lab"} heading={"Lecture Attendance"} />}
+            <AttendanceMap attendances={attendances} totalClasses={selectedData === "Lecture" ? 3*16 : 16} horizontal={selectedData === "Lab"} />}
             {!loadingAttendance && <div className="flex gap-2 items-center max-w-2xl">
               <AttendanceBar attendance={attendance} className="bg-muted-foreground" />
               <Label className="text-muted-foreground">{attendance}%</Label>
