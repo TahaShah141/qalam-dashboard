@@ -18,7 +18,7 @@ export const AttendanceMap = ({attendances, horizontal, rows}: AttendanceMapProp
     // if (i >= attendances.length) return "from-neutral-700 to-black border-neutral-800"
     // return attendances[i].isPresent ? "from-green-700 to-black border-green-500" : "from-red-700 to-black border-red-500"
     if (i >= attendances.length) return "bg-secondary/50 border-black"
-    return attendances[i].isPresent ? "bg-primary border-black" : "bg-primary/50 border-black"
+    return attendances[i].isPresent ? "bg-primary border-black" : "bg-primary/30 border-black"
   } 
 
   const [dateOpen, setDateOpen] = useState(-1)
