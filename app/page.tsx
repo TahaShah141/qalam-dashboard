@@ -44,9 +44,12 @@ export default function Home() {
       setLoadingUser(true)
       const localUser = localStorage.getItem("qalam-user")
       if (localUser) {
-        setUser(JSON.parse(localUser))
-        setLoadingUser(false)
-        return;
+        const user = JSON.parse(localUser)
+        if (user) {
+          setUser(user)
+          setLoadingUser(false)
+          return;
+        }
       }
       const { user } = await fetchUserData(credentials, cookies!)
       setUser(user)
