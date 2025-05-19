@@ -5,6 +5,7 @@ import { CourseInfoType, UserType } from "@/lib/types";
 import { fetchCourseInfo, scrapeCourseData } from "@/lib/fetches/courseData";
 import { useEffect, useState } from "react";
 
+import { Button } from "@/components/ui/button";
 import { CourseCard } from "@/components/custom/CourseCard";
 import { Skeleton } from "@/components/ui/skeleton";
 import { UserCard } from "@/components/custom/UserCard";
@@ -79,6 +80,7 @@ export default function Home() {
   return (
     <div className="flex flex-col gap-6 p-6">
       {user && <UserCard onReload={reloadContent} lastUpdated={lastUpdated} {...user} />}
+      {!user && <Button onClick={() => localStorage.clear()}>Clear</Button>}
       {loadingUser && (
         <Card className="w-full">
           <CardContent className="flex flex-wrap gap-4 justify-between items-center">
