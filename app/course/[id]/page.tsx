@@ -119,19 +119,17 @@ export default function CoursePage() {
               </div>
               <div className="flex flex-wrap items-center gap-2 sm:gap-4 w-fit">
                 <div className="flex gap-2 p-2 rounded-md text-xs sm:text-base bg-secondary">
-                  {/* <p className="font-bold text-green-500">Attended:</p> */}
-                  <p className="font-bold">Attended:</p>
+                  <p className="font-bold text-green-500">Attended:</p>
                   <p className="font-light">{attended}</p>
                 </div>
                 <div className="flex gap-2 p-2 rounded-md text-xs sm:text-base bg-secondary">
-                  {/* <p className="font-bold text-red-500">Missed:</p> */}
-                  <p className="font-bold">Missed:</p>
+                  <p className="font-bold text-red-500">Missed:</p>
                   <p className="font-light">{missed}</p>
                 </div>
               </div>
             </div>
           </div>
-          <div className="flex w-full max-w-md flex-col gap-2 sm:gap-4">
+          <div className="flex w-full max-w-lg flex-col gap-2 sm:gap-4">
             {loadingAttendance ? 
             <Skeleton className="h-24 sm:h-32 w-full " /> :
             <AttendanceMap attendances={attendances} rows={selectedData === "Lecture" ? ((course?.creditHours || 3) - (containsLab ? 1 : 0)) : 1} horizontal={selectedData === "Lab"} />}

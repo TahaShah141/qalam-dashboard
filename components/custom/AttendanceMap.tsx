@@ -15,10 +15,8 @@ export const AttendanceMap = ({attendances, horizontal, rows}: AttendanceMapProp
   const totalClasses = rows * 16
 
   const getAttendanceColor = (i: number): string => {
-    // if (i >= attendances.length) return "from-neutral-700 to-black border-neutral-800"
-    // return attendances[i].isPresent ? "from-green-700 to-black border-green-500" : "from-red-700 to-black border-red-500"
-    if (i >= attendances.length) return "bg-secondary/50 border-black"
-    return attendances[i].isPresent ? "bg-primary border-black" : "bg-primary/50 border-black"
+    if (i >= attendances.length) return "from-neutral-700 to-black border-neutral-800"
+    return attendances[i].isPresent ? "from-green-700 to-black border-green-500" : "from-red-700 to-black border-red-500"
   } 
 
   const [dateOpen, setDateOpen] = useState(-1)
@@ -38,7 +36,7 @@ export const AttendanceMap = ({attendances, horizontal, rows}: AttendanceMapProp
   }, [visibleCount, totalClasses]);
   
   return (
-    <div className={`grid ${horizontal ? "" : "grid-rows-3 grid-flow-col"} w-fit gap-1 sm:gap-1.5`} style={{ gridTemplateColumns: `repeat(16, minmax(0, 1fr))`, gridTemplateRows: `repeat(${rows}, minmax(0, 1fr))` }}>
+    <div className={`w-full grid ${horizontal ? "" : "grid-rows-3 grid-flow-col"} gap-1 sm:gap-1.5 lg:gap-2`} style={{ gridTemplateColumns: `repeat(16, minmax(0, 1fr))`, gridTemplateRows: `repeat(${rows}, minmax(0, 1fr))` }}>
       {Array.from({length: totalClasses}, (_, i) => (
         <HoverCard key={i} openDelay={1000} open={dateOpen === i} onOpenChange={() => {}}>
           <HoverCardTrigger onMouseEnter={() => setDateOpen(d => d ? i : i)} onMouseLeave={() => setTimeout(() => setDateOpen(d => d === i ? -1 : d), 250)} onClick={() => setDateOpen(d => d === i ? -1 : i)} className="underline">
