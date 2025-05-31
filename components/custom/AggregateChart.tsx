@@ -46,12 +46,12 @@ export const AggregateChart = ({selectedData, grades}: AggregateChartProps) => {
         <ChartContainer config={chartConfig}>
           <BarChart accessibilityLayer layout="vertical" data={chartData}>
             <YAxis 
+              width={65}
               dataKey={"type"}
               type="category"
               tickLine={false}
               tickMargin={10}
               axisLine={false}
-              tickFormatter={v => v === "Obtained" ? "Obt." : "Avg."}
             />
             <XAxis
               type="number"

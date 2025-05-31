@@ -43,9 +43,10 @@ export const GradingComponentCard = ({name, weight, components}: GradingComponen
         <ChartContainer config={chartConfig}>
           <BarChart accessibilityLayer data={chartData}>
             <CartesianGrid vertical={false} />
-            <YAxis 
+            <YAxis
+              width={25}
               tickLine={false}
-              tickMargin={10}
+              tickMargin={0}
               axisLine={false}
             />
             <XAxis
