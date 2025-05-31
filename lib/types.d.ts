@@ -27,3 +27,23 @@ export type CredentialsType = {
   login: string
   password: string
 }
+
+export type MarksType = {
+  name: string
+  maxMarks: number
+  obtainedMarks: number
+  averageMarks: number
+}
+
+export type GradingComponentType = {
+  name: string
+  weight: number
+  components: MarksType[]
+}
+
+export type CourseGradeBookComponentType = {
+  name: string
+  components: GradingComponentType[]
+}
+
+export type CourseGradeBookType = CourseGradeBookComponentType[]
