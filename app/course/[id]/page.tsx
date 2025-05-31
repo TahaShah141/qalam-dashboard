@@ -1,15 +1,20 @@
 "use client"
 
+import { Bar, BarChart, CartesianGrid, XAxis, YAxis } from "recharts"
 import { Button, buttonVariants } from "@/components/ui/button"
-import { Card, CardContent, CardDescription, CardTitle } from "@/components/ui/card"
-import { CourseAttendanceType, CourseInfoType } from "@/lib/types"
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
+import { ChartConfig, ChartContainer, ChartTooltip, ChartTooltipContent } from "@/components/ui/chart"
+import { CourseAttendanceType, CourseGradeBookType, CourseInfoType } from "@/lib/types"
 import { DropdownMenu, DropdownMenuContent, DropdownMenuRadioGroup, DropdownMenuRadioItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
 import { fetchCourseAttendance, scrapeCourseAttendanceData } from "@/lib/fetches/courseAttendance"
-import { getLocalCourseInfo, getLocalCredentials } from "@/lib/utils"
+import { fetchCourseGrades, scrapeCourseGradesData } from "@/lib/fetches/courseGrades"
+import { getLocalCourseInfo, getLocalCredentials, getWeightedAverages } from "@/lib/utils"
 import { useEffect, useState } from "react"
 
+import { AggregateChart } from "@/components/custom/AggregateChart"
 import { AttendanceBar } from "@/components/custom/AttendanceBar"
 import { AttendanceMap } from "@/components/custom/AttendanceMap"
+import { GradingComponentCard } from "@/components/custom/GradingComponentCard"
 import { Label } from "@/components/ui/label"
 import { Skeleton } from "@/components/ui/skeleton"
 import { updateCookies } from "@/lib/fetches/cookies"
@@ -29,6 +34,8 @@ export default function CoursePage() {
   const [course, setCourse] = useState<CourseInfoType | undefined>()
   const [attendancesMap, setAttendancesMap] = useState<CourseAttendanceType>({})
   const [loadingAttendance, setLoadingAttendance] = useState(false)
+  const [grades, setGrades] = useState<CourseGradeBookType>([])
+  const [loadingGrades, setLoadingGrades] = useState(false)
 
   useEffect(() => {
     // local data
@@ -47,21 +54,39 @@ export default function CoursePage() {
       setAttendancesMap(attendances)
       setLoadingAttendance(false)
     }
+    
+    // fetch Grade Book
+    const fetchGrades = async () => {
+      const cookies = localStorage.getItem("cookies")
+      setLoadingGrades(true)
+      const { grades } = await fetchCourseGrades(id, credentials, cookies!)
+      setGrades(grades)
+      setLoadingGrades(false)
+    }
 
     const effectFunctions = async () => {
       if (!cookies) await updateCookies(credentials);
       fetchAttendances()
+      fetchGrades()
     }
     effectFunctions()
   }, [id])
 
   const reloadContent = async () => {
     setLoadingAttendance(true)
+    setLoadingGrades(true)
     const { credentials } = getLocalCredentials()
     const cookies = localStorage.getItem("cookies")
-    const attendances = await scrapeCourseAttendanceData(id, credentials, cookies!)
-    setAttendancesMap(attendances)
-    setLoadingAttendance(false)
+    const attendancesPromise = scrapeCourseAttendanceData(id, credentials, cookies!)
+    const gradesPromise = scrapeCourseGradesData(id, credentials, cookies!)
+    attendancesPromise.then((attendances) => {
+      setAttendancesMap(attendances)
+      setLoadingAttendance(false)
+    })
+    gradesPromise.then((grades) => {
+      setGrades(grades)
+      setLoadingGrades(false)
+    })
   }
 
   const attendances = attendancesMap[selectedData] || []
@@ -70,8 +95,6 @@ export default function CoursePage() {
   const missed = total - attended
   const attendance = Math.round((attended / total)*100)
   const containsLab = attendancesMap.Lab !== undefined
-
-  console.log({attendances})
 
   return (
     <div className="flex flex-col gap-6 p-6">
@@ -140,6 +163,18 @@ export default function CoursePage() {
           </div>
         </CardContent>
       </Card>
+
+      <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {!loadingGrades && 
+        <>
+        <AggregateChart selectedData={selectedData} grades={grades} />
+        {grades.find(g => g.name === selectedData)?.components.map((c, i) => <GradingComponentCard key={i} {...c} />)}
+        </>}
+        {loadingGrades && 
+        <>
+          {Array.from({length: 3}, (_, i) => <Skeleton key={i} className="h-[300px] w-full" />)}
+        </>}
+      </div>
     </div>
   )
 }

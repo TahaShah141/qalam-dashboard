@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 
-import { getCourseMarksFromQalam } from "@/lib/scraping/courseMarks";
+import { getCourseGradesFromQalam } from "@/lib/scraping/courseGrades";
 import { initNode } from "@/lib/initNode";
 import { isVerified } from "@/lib/isVerified";
 
@@ -16,9 +16,9 @@ export async function POST(request: NextRequest, context: { params: Promise<Para
   const { credentials, cookies } = await request.json()
 
   try {
-    const marks = await getCourseMarksFromQalam(id, credentials, cookies)
-    if (isVerified(credentials)) await initNode({key: `course-${id}-marks`, value: JSON.stringify(marks)});    
-    return NextResponse.json({ marks })
+    const grades = await getCourseGradesFromQalam(id, credentials, cookies)
+    if (isVerified(credentials)) await initNode({key: `course-${id}-grades`, value: JSON.stringify(grades)});    
+    return NextResponse.json({ grades })
   } catch (error) {
     console.log(error)
     return NextResponse.json({ error: error})
