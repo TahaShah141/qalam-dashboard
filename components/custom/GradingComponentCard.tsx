@@ -59,8 +59,8 @@ export const GradingComponentCard = ({name, weight, components}: GradingComponen
               cursor={false}
               content={<ChartTooltipContent indicator="line" />}
             />
-            <Bar className="w-[40px]" dataKey="obtained" fill="var(--color-obtained)" radius={2} />
-            <Bar dataKey="average" fill="var(--color-average)" radius={2} />
+            <Bar className="w-[40px]" dataKey="obtained" fill="var(--color-obtained)" radius={chartData.length <= 6 ? 2 : 0} />
+            <Bar dataKey="average" fill="var(--color-average)" radius={chartData.length <= 6 ? 2 : 0} />
           </BarChart>
         </ChartContainer>
       </CardContent>
