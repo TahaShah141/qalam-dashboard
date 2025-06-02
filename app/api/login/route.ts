@@ -10,7 +10,6 @@ export async function POST(request: NextRequest) {
 
   try {
     const cookies = await login(credentials)
-    console.log({cookies})
     return NextResponse.json({ verified: true, cookies })
   } catch (error) {
     return NextResponse.json({ verified: false, error })
