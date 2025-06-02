@@ -15,6 +15,7 @@ import { Button } from "@/components/ui/button"
 import { CredentialsType } from "@/lib/types"
 import { Input } from "@/components/ui/input"
 import { Label } from "../ui/label"
+import Link from "next/link"
 import { useForm } from "react-hook-form"
 import { useState } from "react"
 import { z } from "zod"
@@ -84,7 +85,7 @@ export const LoginForm = ({setAuthenticated}: LoginFormProps) => {
   }
 
   return (
-    <div className="h-screen flex justify-center items-center p-2">
+    <div className="h-screen flex flex-col justify-center items-center p-2">
       <Form {...form}>
         <Card className="w-full max-w-sm">
           <CardHeader>
@@ -161,6 +162,12 @@ export const LoginForm = ({setAuthenticated}: LoginFormProps) => {
           </CardContent>
         </Card>
       </Form>
+      <div className="fixed bottom-0 left-1/2 -translate-x-1/2 flex gap-2 text-white py-2">
+        Check out the repo on
+        <Link className="text-blue-600 underline" href={"https://github.com/TahaShah141/qalam-dashboard"}>
+          Github.
+        </Link>
+      </div>
     </div>
   )
 }
