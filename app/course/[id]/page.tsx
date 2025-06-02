@@ -174,7 +174,7 @@ export default function CoursePage() {
         {!loadingGrades && 
         <>
         <AggregateChart containsLab={containsLab} selectedData={selectedData} grades={grades} />
-        {grades.find(g => g.name === selectedData)?.components.map((c, i) => <GradingComponentCard key={i} {...c} />)}
+        {grades.find(g => g.name === selectedData)?.components.sort((ca, cb) => ca.weight - cb.weight).map((c, i) => <GradingComponentCard key={i} {...c} />)}
         </>}
         {loadingGrades && 
         <>
