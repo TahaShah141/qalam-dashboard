@@ -35,8 +35,6 @@ export const AggregateChart = ({containsLab, selectedData, grades}: AggregateCha
   const data = dataKey !== "Overall" ? grades.find(g => g.name === selectedData)! : getOverallData(grades)
   const { average: averageAggregate, obtained: obtainedAggregate } = getWeightedAverages(data)
 
-  console.log({averageAggregate, obtainedAggregate})
-
   const chartData = [
     { type: "Obtained", "%age": +((obtainedAggregate*100).toFixed(2)), fill: "var(--color-obtained)" },
     { type: "Average", "%age": +((averageAggregate*100).toFixed(2)), fill: "var(--color-average)"},

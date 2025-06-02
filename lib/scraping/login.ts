@@ -50,6 +50,6 @@ export const login = async (credentials: CredentialsType): Promise<string> => {
     throw new Error("Login failed — no session cookies received");
   }
 
-  console.log("Login succeeded. Session cookies:", sessionCookies);
+  // console.log("Login succeeded. Session cookies:", sessionCookies);
   return sessionCookies;
 };

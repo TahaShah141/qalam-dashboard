@@ -72,7 +72,5 @@ export const getCourseGradesFromQalam = async (id: string, credentials: Credenti
     result.push(course);
   });
 
-  console.log(result)
-
   return result;
 };

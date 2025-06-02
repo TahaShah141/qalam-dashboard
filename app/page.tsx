@@ -23,7 +23,6 @@ export default function Home() {
   useEffect(() => {
     // local data
     const cookies = localStorage.getItem("cookies")
-    console.log({cookies})
     const { credentials } = getLocalCredentials()
     
     // Fetch Courses
@@ -74,7 +73,6 @@ export default function Home() {
     const { credentials } = getLocalCredentials()
     const cookies = localStorage.getItem("cookies")
     const courses = await scrapeCourseData(credentials, cookies!)
-    console.log({courses})
     setCourses(courses)
     setLastUpdated(formatDate(Date.now(), "HH:mm, do MMM"))
     setLoadingCourses(false)

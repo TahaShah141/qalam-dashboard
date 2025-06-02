@@ -42,6 +42,5 @@ export const getCourseInfoFromQalam = async (credentials: CredentialsType, cooki
     });
   });
 
-  console.log(cards);
   return cards;
 };

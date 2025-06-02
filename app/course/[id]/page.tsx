@@ -46,7 +46,6 @@ export default function CoursePage() {
   useEffect(() => {
     // local data
     const cookies = localStorage.getItem("cookies")
-    console.log({cookies})
     const { credentials } = getLocalCredentials()
 
     const { course: localCourse} = getLocalCourseInfo(id)
