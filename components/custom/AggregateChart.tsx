@@ -44,31 +44,32 @@ export const AggregateChart = ({containsLab, selectedData, grades}: AggregateCha
 
   return (
     <Card>
-      <CardHeader className="flex justify-between gap-2 flex-wrap">
-        <div>
+      <CardHeader>
+        <div className="flex flex-wrap items-center justify-between gap-2">
           <CardTitle>
             Aggregate
           </CardTitle>
-          <CardDescription>
-            {`Aggregate for the ${containsLab ? `${dataKey} ${dataKey === "Overall" ? "Course" : "component"}` : "Overall Course"}`}
-          </CardDescription>
+          {containsLab && 
+          <DropdownMenu>
+            <DropdownMenuTrigger className={`${buttonVariants({variant: "secondary", size: "smlg"})} font-bold text-xs capitalize w-24`}>
+              <svg className="size-3" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path fill="none" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="m7 15l5 5l5-5M7 9l5-5l5 5"/></svg>
+              <Label>{dataKey}</Label>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent>
+              <DropdownMenuRadioGroup value={dataKey} onValueChange={(v) => setDataKey(v)}>
+                {[selectedData, "Overall"].map((type) => (
+                  <DropdownMenuRadioItem key={type} value={type}>
+                    {type}
+                  </DropdownMenuRadioItem>
+                ))}
+              </DropdownMenuRadioGroup>
+            </DropdownMenuContent>
+          </DropdownMenu>}
         </div>
-        {containsLab && 
-        <DropdownMenu>
-          <DropdownMenuTrigger className={`${buttonVariants({variant: "secondary", size: "smlg"})} font-bold text-xs capitalize w-24`}>
-            <svg className="size-3" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path fill="none" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="m7 15l5 5l5-5M7 9l5-5l5 5"/></svg>
-            <Label>{dataKey}</Label>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent>
-            <DropdownMenuRadioGroup value={dataKey} onValueChange={(v) => setDataKey(v)}>
-              {[selectedData, "Overall"].map((type) => (
-                <DropdownMenuRadioItem key={type} value={type}>
-                  {type}
-                </DropdownMenuRadioItem>
-              ))}
-            </DropdownMenuRadioGroup>
-          </DropdownMenuContent>
-        </DropdownMenu>}
+        <CardDescription>
+          {`Aggregate for the ${containsLab ? `${dataKey} ${dataKey === "Overall" ? "Course" : "component"}` : "Overall Course"}`}
+        </CardDescription>
+        
       </CardHeader>
       <CardContent>
         <ChartContainer config={chartConfig}>
