@@ -9,7 +9,7 @@ export const CourseCard = ({name, code, id, instructor, attendance}: CourseInfoT
 
   return (
     <Link href={`/course/${id}`}>
-      <Card>
+      <Card className="h-full flex flex-col justify-between">
         <CardHeader>
           <CardTitle className="flex gap-2 items-center flex-wrap">
             {name}
