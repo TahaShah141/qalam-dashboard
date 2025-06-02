@@ -1,6 +1,6 @@
 import { clsx, type ClassValue } from "clsx"
 import { twMerge } from "tailwind-merge"
-import { CourseGradeBookComponentType, CourseInfoType, CredentialsType } from "./types"
+import { CourseGradeBookComponentType, CourseGradeBookType, CourseInfoType, CredentialsType } from "./types"
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
@@ -44,4 +44,19 @@ export const getWeightedAverages = (data: CourseGradeBookComponentType): {averag
   }, 0)
 
   return {average, obtained}
+}
+
+export const getOverallData = (grades: CourseGradeBookType): CourseGradeBookComponentType => {
+  const combinedComponents = grades.flatMap(component => {
+    const factor = component.name === "Lecture" ? 0.75 : component.name === "Lab" ? 0.25 : 1
+    return component.components.map(sub => ({
+      ...sub,
+      weight: sub.weight * factor
+    }))
+  })
+
+  return {
+    name: "Overall",
+    components: combinedComponents
+  }
 }

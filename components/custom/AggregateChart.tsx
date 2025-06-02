@@ -1,15 +1,20 @@
-import { BarChart, YAxis, XAxis, Bar, LabelList } from "recharts"
+import { BarChart, YAxis, XAxis, Bar } from "recharts"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "../ui/card"
 import { ChartConfig, ChartContainer, ChartTooltip, ChartTooltipContent } from "../ui/chart"
 import { CourseGradeBookType } from "@/lib/types"
-import { getWeightedAverages } from "@/lib/utils"
+import { getOverallData, getWeightedAverages } from "@/lib/utils"
+import { DropdownMenu, DropdownMenuContent, DropdownMenuRadioGroup, DropdownMenuRadioItem, DropdownMenuTrigger } from "../ui/dropdown-menu"
+import { buttonVariants } from "../ui/button"
+import { useEffect, useState } from "react"
+import { Label } from "@radix-ui/react-label"
 
 type AggregateChartProps = {
+  containsLab: boolean
   selectedData: string
   grades: CourseGradeBookType
 }
 
-export const AggregateChart = ({selectedData, grades}: AggregateChartProps) => {
+export const AggregateChart = ({containsLab, selectedData, grades}: AggregateChartProps) => {
 
   const chartConfig = {
     obtained: {
@@ -22,7 +27,12 @@ export const AggregateChart = ({selectedData, grades}: AggregateChartProps) => {
     },
   } satisfies ChartConfig
 
-  const data = grades.find(g => g.name === selectedData)!
+  const [dataKey, setDataKey] = useState(selectedData)
+  useEffect(() => {
+    setDataKey(selectedData)
+  }, [selectedData])
+
+  const data = dataKey !== "Overall" ? grades.find(g => g.name === selectedData)! : getOverallData(grades)
   const { average: averageAggregate, obtained: obtainedAggregate } = getWeightedAverages(data)
 
   console.log({averageAggregate, obtainedAggregate})
@@ -34,13 +44,31 @@ export const AggregateChart = ({selectedData, grades}: AggregateChartProps) => {
 
   return (
     <Card>
-      <CardHeader>
-        <CardTitle>
-          Aggregate
-        </CardTitle>
-        <CardDescription>
-          {`Aggregate for the ${selectedData} component`}
-        </CardDescription>
+      <CardHeader className="flex justify-between gap-2 flex-wrap">
+        <div>
+          <CardTitle>
+            Aggregate
+          </CardTitle>
+          <CardDescription>
+            {`Aggregate for the ${containsLab ? `${dataKey} ${dataKey === "Overall" ? "Course" : "component"}` : "Overall Course"}`}
+          </CardDescription>
+        </div>
+        {containsLab && 
+        <DropdownMenu>
+          <DropdownMenuTrigger className={`${buttonVariants({variant: "secondary", size: "smlg"})} font-bold text-xs capitalize w-24`}>
+            <svg className="size-3" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path fill="none" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="m7 15l5 5l5-5M7 9l5-5l5 5"/></svg>
+            <Label>{dataKey}</Label>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent>
+            <DropdownMenuRadioGroup value={dataKey} onValueChange={(v) => setDataKey(v)}>
+              {[selectedData, "Overall"].map((type) => (
+                <DropdownMenuRadioItem key={type} value={type}>
+                  {type}
+                </DropdownMenuRadioItem>
+              ))}
+            </DropdownMenuRadioGroup>
+          </DropdownMenuContent>
+        </DropdownMenu>}
       </CardHeader>
       <CardContent>
         <ChartContainer config={chartConfig}>
