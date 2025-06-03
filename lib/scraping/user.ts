@@ -41,7 +41,6 @@ export const getUserData = async (credentials: CredentialsType, cookies?: string
       department: departmentElement.text().trim(),
     };
 
-    console.log(user.name)
     return user;
   } catch (error) {
     console.error("Error fetching or parsing user data:", error);
