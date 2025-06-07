@@ -5,6 +5,10 @@ import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover"
 
 import { Label } from "../ui/label"
 import { UserType } from "@/lib/types"
+import { getLocalCredentials } from "@/lib/utils"
+import { toast } from "sonner"
+import { useState } from "react";
+import { verify } from "@/lib/fetches/verify"
 
 type UserCardProps = UserType & {
   onReload: () => void
@@ -13,7 +17,7 @@ type UserCardProps = UserType & {
 
 
 export const UserCard = ({name, cms, department, pfp, onReload, lastUpdated}: UserCardProps) => {
-  
+  const [avatarClickCount, setAvatarClickCount] = useState(0);
   const PopoverOptions = () => {
     return (
       <Popover>
@@ -21,6 +25,9 @@ export const UserCard = ({name, cms, department, pfp, onReload, lastUpdated}: Us
           <svg className="size-4" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><g fill="none" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2"><circle cx="12" cy="12" r="1"/><circle cx="12" cy="5" r="1"/><circle cx="12" cy="19" r="1"/></g></svg>
         </PopoverTrigger>
         <PopoverContent className="flex flex-col gap-2 p-0 w-min">
+          <div className={`text-xs text-muted-foreground ${buttonVariants({ variant: "ghost"})}`}>
+            {lastUpdated}
+          </div>
           <Button onClick={() => {localStorage.clear(); location.reload();}} variant={"ghost"}>
             <svg className="size-4" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path fill="none" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="m16 17l5-5l-5-5m5 5H9m0 9H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/></svg>
             Logout
@@ -34,11 +41,27 @@ export const UserCard = ({name, cms, department, pfp, onReload, lastUpdated}: Us
     )
   }
 
+  const masterScrape = async () => {
+    const { credentials } = getLocalCredentials()
+    const { verified } = await verify(credentials)
+    if (verified) fetch('/api/scrape/qalam')
+  }
+
   return (
     <Card>
       <CardContent className="flex flex-wrap gap-4 justify-between items-center">
         <div className="flex gap-4 items-center">
-          <Avatar className="size-20">
+          <Avatar className="size-20" onClick={() => {
+            setAvatarClickCount(prev => {
+              const newCount = prev + 1;
+              if (newCount === 3) {
+                toast("Performing Master Scrape");
+                masterScrape();
+                return 0; // Reset count after triggering
+              }
+              return newCount;
+            });
+          }}>
             <AvatarImage src={pfp} alt={"pfp"}/>
             <AvatarFallback>TS</AvatarFallback>
           </Avatar>
