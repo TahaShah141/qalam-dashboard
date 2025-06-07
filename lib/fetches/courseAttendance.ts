@@ -1,11 +1,10 @@
 import { CourseAttendanceType, CredentialsType } from "../types";
 
+import { verify } from "./verify";
+
 export const fetchCourseAttendance = async (id: string, credentials: CredentialsType, cookies: string): Promise<{attendances: CourseAttendanceType}> => {
-  const { verified } = await (await fetch("/api/verify", {
-    method: 'POST',
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({credentials})
-  })).json()
+  
+  const { verified } = await verify(credentials)
 
   if (verified) {
     const attendances = await fetchCourseAttendanceFromDB(id)
