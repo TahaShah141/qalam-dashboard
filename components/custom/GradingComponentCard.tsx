@@ -24,8 +24,9 @@ export const GradingComponentCard = ({name, weight, components}: GradingComponen
     average: Math.round((averageMarks/maxMarks)*1000) / 10
   })).filter(d => d.average !== 0)
 
-  const totalObtained = chartData.reduce((acc, curr) => acc + curr.obtained, 0);
-  const totalAverage = chartData.reduce((acc, curr) => acc + curr.average, 0);
+  const totalMaxMarks = components.reduce((sum, { maxMarks }) => sum + maxMarks, 0);
+  const totalObtained = components.reduce((sum, { obtainedMarks }) => sum + obtainedMarks, 0) / totalMaxMarks * 100;
+  const totalAverage = components.reduce((sum, { averageMarks }) => sum + averageMarks, 0) / totalMaxMarks * 100;
 
   if (chartData.length < 1) return null
 
@@ -68,11 +69,11 @@ export const GradingComponentCard = ({name, weight, components}: GradingComponen
       <CardFooter className="flex flex-wrap gap-2 justify-between">
         <div className="flex gap-2 items-center p-2 rounded-md bg-secondary">
           <Label className="font-bold">Obtained</Label>
-          <Label>{`${(totalObtained / chartData.length).toFixed(2)}%`}</Label>
+          <Label>{`${totalObtained.toFixed(2)}%`}</Label>
         </div>          
         <div className="flex gap-2 items-center p-2 rounded-md bg-secondary">
           <Label className="font-bold">Average</Label>
-          <Label>{`${(totalAverage / chartData.length).toFixed(2)}%`}</Label>
+          <Label>{`${totalAverage.toFixed(2)}%`}</Label>
         </div>          
       </CardFooter>
     </Card>

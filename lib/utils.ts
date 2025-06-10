@@ -31,18 +31,22 @@ export const getWeightedAverages = (data: CourseGradeBookComponentType): {averag
 
   const average = filteredData.reduce((acc, cur) => {
     const { weight, components } = cur
-    const sumAverage = components.reduce((sum, {maxMarks, averageMarks}) => {
-      return sum + averageMarks / maxMarks
+    const filteredComponents = components.filter((c) => c.averageMarks > 0 && c.maxMarks > 0)
+    const totalMaxMarks = filteredComponents.reduce((s, c) => s + c.maxMarks, 0)
+    const sumAverage = filteredComponents.reduce((sum, {maxMarks, averageMarks}) => {
+      return sum + averageMarks / totalMaxMarks
     }, 0)
-    return acc + weight/100 * sumAverage/components.length
+    return acc + weight/100 * sumAverage
   }, 0)
 
   const obtained = filteredData.reduce((acc, cur) => {
     const { weight, components } = cur
+    const filteredComponents = components.filter((c) => c.averageMarks > 0 && c.maxMarks > 0)
+    const totalMaxMarks = filteredComponents.reduce((s, c) => s + c.maxMarks, 0)
     const sumObtained = components.reduce((sum, {maxMarks, obtainedMarks}) => {
-      return sum + obtainedMarks / maxMarks
+      return sum + obtainedMarks / totalMaxMarks
     }, 0)
-    return acc + weight/100 * sumObtained/components.length
+    return acc + weight/100 * sumObtained
   }, 0)
 
   return {average, obtained}
