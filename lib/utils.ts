@@ -50,7 +50,7 @@ export const getWeightedAverages = (data: CourseGradeBookComponentType): {averag
 
 export const getOverallData = (grades: CourseGradeBookType): CourseGradeBookComponentType => {
   const combinedComponents = grades.flatMap(component => {
-    const factor = component.name === "Lecture" ? grades.length === 1 ? 1 : 0.75 : component.name === "Lab" ? 0.25 : 1
+    const factor = component.name === "Lecture" ? 0.75 : component.name === "Lab" ? 0.25 : 1
     return component.components.map(sub => ({
       ...sub,
       weight: sub.weight * factor
